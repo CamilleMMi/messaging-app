@@ -1,10 +1,20 @@
-const express = require("express");
-const routes = require("./routes");
+const express = require('express');
+//const errorMiddleware = require('./middlewares/errorMiddleware');
+const envConfiguration = require('./configurations/env.configuration-1.0.0');
+const mongoConfiguration = require('./configurations/mongo.configuration-1.0.0');
+const routes = require('./routes');
+
+const { port } = envConfiguration;
+
+mongoConfiguration();
 
 const app = express();
 
+app.use(express.json());
+//app.use(cors());
+
 routes(app);
 
-app.listen(5001, () => {
-    console.log("server is running on port 5001");
-});
+//app.use(errorMiddleware);
+
+app.listen(port, () => console.log(`Server running on port ${port}`));
