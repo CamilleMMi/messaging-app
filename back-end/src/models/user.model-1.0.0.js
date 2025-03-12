@@ -35,21 +35,32 @@ const userSchema = new mongoose.Schema(
             enum: ['user'],
             default: 'user'
         },
-        fullName: {
+        firstName: {
             type: String,
-            required: [true, ""]
+            required: false
+        },
+        lastName: {
+            type: String,
+            required: false
         },
         nickName: {
             type: String,
             required: true,
             unique: true,
-            required: [true, "Nickname required"]
+            required: false
         },
         profilePic: {
             type: String,
             default: "",
+            required: false
+        },
+        profileSetup: {
+            type: Boolean,
+            default: false,
+            required: false
         },
         authTokens: [{
+            _id: false,
             authToken: {
                 type: String,
                 required: true
@@ -66,7 +77,7 @@ userSchema.methods.toJSON = function() {
     const user = this.toObject();
 
     delete user.password;
-    delete user.fullName;
+    delete user.profileSetup;
     delete user.authTokens;
     delete user.createdAt;
     delete user.updatedAt;
