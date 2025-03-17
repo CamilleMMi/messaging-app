@@ -30,7 +30,7 @@ const socketConfiguration = (server) => {
         });
     });
 
-    console.log("socketConfiguration done\n");
+    console.log("Socket Configuration done\n");
 };
 
 module.exports = socketConfiguration;

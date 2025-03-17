@@ -1,9 +1,5 @@
-const dotenv = require('dotenv');
-
-dotenv.config({ path: './src/env/.env' });
-
-const { BACKEND_URL } = process.env
-
-module.exports = {
-    backend_url : BACKEND_URL,
+const envConfiguration = {
+    backend_url: import.meta.env.VITE_BACKEND_URL,
 };
+
+export default envConfiguration;

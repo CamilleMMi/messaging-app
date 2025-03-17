@@ -4,6 +4,8 @@ const authMiddleware = require('../middlewares/auth.middleware-1.0.0');
 
 const router = express.Router();
 
+router.post("/user-info", authMiddleware([]), authController.userInfo);
+
 router.post("/login", authController.login);
 
 router.post("/register", authController.register);

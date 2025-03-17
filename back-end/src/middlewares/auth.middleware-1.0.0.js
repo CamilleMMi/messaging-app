@@ -5,8 +5,11 @@ const envConfiguration = require('../configurations/env.configuration-1.0.0');
 const { jwt_key } = envConfiguration;
 
 const authMiddleware = (roles = []) => {
+    console.log("entrer middleware");
+
     return async (req, res, next) => {
         try {
+            console.log("caca");
             const authToken = req.header('Authorization').replace('Bearer ', '');
             const decodedToken = jwt.verify(authToken, jwt_key);
 

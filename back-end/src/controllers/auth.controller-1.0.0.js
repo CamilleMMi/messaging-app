@@ -5,6 +5,18 @@ const cookieHelper = require('../helpers/cookie.helper-1.0.0');
 
 const { env } = envConfiguration;
 
+const userInfo = asyncHandler(async(req, res) => {
+    return res.status(200).json({ user: {
+        _id: req.user._id,
+        email: req.user.email,
+        firstName: req.user.firstName,
+        lastName: req.user.lastName,
+        nickName: req.user.nickName,
+        profilePic: req.user.profilePic,
+        profileSetup: req.user.profileSetup
+    } });
+});
+
 const login = asyncHandler(async(req, res) => {
     const { email, password } = req.body;
 
@@ -14,7 +26,15 @@ const login = asyncHandler(async(req, res) => {
 
         cookieHelper.setJwtCookie(res, authToken, env);
 
-        res.status(200).json({ user });
+        res.status(200).json({ user: {
+            _id: user._id,
+            email: user.email,
+            firstName: user.firstName,
+            lastName: user.lastName,
+            nickName: user.nickName,
+            profilePic: user.profilePic,
+            profileSetup: user.profileSetup
+        } });
     } catch (error) {
         res.status(500);
         throw new Error(error.message);
@@ -28,7 +48,13 @@ const register = asyncHandler(async(req, res) => {
 
         cookieHelper.setJwtCookie(res, authToken, env);
 
-        res.status(201).json({ user });
+        res.status(201).json({ user : {
+            _id: user._id,
+            email: user.email,
+            nickName: user.nickName,
+            profilePic: user.profilePic,
+            profileSetup: user.profileSetup
+        } });
     } catch (error) {
         res.status(500);
         throw new Error(error.message);
@@ -53,6 +79,7 @@ const logout = asyncHandler(async(req, res) => {
 })
 
 module.exports = {
+    userInfo,
     login,
     register,
     logout

@@ -45,9 +45,9 @@ const userSchema = new mongoose.Schema(
         },
         nickName: {
             type: String,
-            required: true,
             unique: true,
-            required: false
+            required: false,
+            sparse: true
         },
         profilePic: {
             type: String,
@@ -77,8 +77,6 @@ userSchema.methods.toJSON = function() {
     const user = this.toObject();
 
     delete user.password;
-    delete user.profileSetup;
-    delete user.authTokens;
     delete user.createdAt;
     delete user.updatedAt;
     delete user.__v;

@@ -1,27 +1,101 @@
 import React, { useState, useEffect } from 'react';
 import Background from '@/assets/images/login2.png';
-import Victory from '@/assets/svg/victory.svg';
 import { Tabs } from '@/components/ui/tabs';
 import { TabsList, TabsTrigger, TabsContent } from '@radix-ui/react-tabs';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
+import { toast } from 'sonner';
+import { isValidEmail } from '@/helpers/email.helper-1.0.0';
+import { isValidPassword } from '@/helpers/password.helper-1.0.0';
+import apiClient from '@/configurations/api-client.configuration-1.0.0';
+import { useAppStore } from '@/store';
+import { useNavigate } from 'react-router-dom';
 
 const Auth = () => {
+    const navigate = useNavigate();
+
+    const { userInfo, setUserInfo } = useAppStore();
 
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
-    const [confirmPassword, setConfigPassword] = useState("");
+    const [confirmPassword, setConfirmPassword] = useState("");
     const [activeTab, setActiveTab] = useState("login");
 
     useEffect(() => {
         setEmail("");
         setPassword("");
-        setConfigPassword("");
+        setConfirmPassword("");
     }, [activeTab]);
 
-    const handleLogin = async () => {};
+    const validateRegister = () => {
+        if (!email || !password || !confirmPassword) {
+            toast.error("Please fill in all the fields");
+            return false;
+        }
+        if (password !== confirmPassword) {
+            toast.error("Passwords do not match");
+            return false;
+        }
+        if (!isValidEmail(email)) {
+            toast.error("Invalid email format");
+            return false;
+        }
+        if (!isValidPassword(password)) {
+            toast.error("Password must be at least 8 characters long, include an uppercase letter, a lowercase letter, a number, and a special character.");
+            return false;
+        }
+        
+        return true;
+    };
 
-    const handleSignup = async () => {};
+    const validateLogin = () => {
+        if (!email || !password) {
+            toast.error("Please fill in all the fields");
+            return false;
+        }
+        if (!isValidEmail(email)) {
+            toast.error("Invalid email format");
+            return false;
+        }
+
+        return true;
+    };
+
+    const handleLogin = async () => {
+        console.log("test")
+        if (validateLogin()) {
+            const response = await apiClient.post("/auth/login", {
+                email,
+                password
+            });
+
+            if (response.status === 200) {
+                setUserInfo(response.data.user);
+                if (response.data.user.profileSetup) {
+                    toast.success("Login successful");
+                    navigate("/chat");
+                } else {
+                    toast.success("Login successful");
+                    navigate("/profile");
+                }
+            }
+        }
+    };
+
+    const handleRegister = async () => {
+        if (validateRegister()) {
+            const response = await apiClient.post("/auth/register", {
+                email,
+                password
+            });
+
+            if (response.status === 201) {
+                setUserInfo(response.data.user);
+                toast.success("Account created successfully");
+                navigate("/profile");
+            }
+        }
+    };
 
     return (
         <div className="h-[100vh] w-[100vw] flex items-center justify-center">
@@ -41,8 +115,8 @@ const Auth = () => {
                                 <TabsTrigger value="login" className="data-[state=active]:bg-transparent text-black text-opacity-90 border-b-2 rounded-none w-full data-[state=active]:font-semibold data-[state=active]:border-b-green-500 p-3 transition-all duration-300">
                                     Login
                                 </TabsTrigger>
-                                <TabsTrigger value="signup" className="data-[state=active]:bg-transparent text-black text-opacity-90 border-b-2 rounded-none w-full data-[state=active]:font-semibold data-[state=active]:border-b-green-500 p-3 transition-all duration-300">
-                                    Signup
+                                <TabsTrigger value="register" className="data-[state=active]:bg-transparent text-black text-opacity-90 border-b-2 rounded-none w-full data-[state=active]:font-semibold data-[state=active]:border-b-green-500 p-3 transition-all duration-300">
+                                    Register
                                 </TabsTrigger>
                             </TabsList>
                             <TabsContent className="flex flex-col gap-5 mt-10" value="login">
@@ -52,12 +126,12 @@ const Auth = () => {
                                     Login
                                 </Button>
                             </TabsContent>
-                            <TabsContent className="flex flex-col gap-5 mt-10" value="signup">
+                            <TabsContent className="flex flex-col gap-5 mt-10" value="register">
                                 <Input placeholder="Email" type="email" className="rounded-full p-6" value={email} onChange={(e) => setEmail(e.target.value)}/>
                                 <Input placeholder="Password" type="password" className="rounded-full p-6" value={password} onChange={(e) => setPassword(e.target.value)}/>
-                                <Input placeholder="Confirm Password" type="password" className="rounded-full p-6" value={confirmPassword} onChange={(e) => setConfigPassword(e.target.value)}/>
-                                <Button className="rounded-full p-6" onClick={handleSignup}>
-                                    Signup
+                                <Input placeholder="Confirm Password" type="password" className="rounded-full p-6" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)}/>
+                                <Button className="rounded-full p-6" onClick={handleRegister}>
+                                    Register
                                 </Button>
                             </TabsContent>
                         </Tabs>

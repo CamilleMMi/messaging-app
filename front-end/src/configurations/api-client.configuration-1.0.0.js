@@ -1,12 +1,14 @@
-const envConfiguration = require('./env.configuration-1.0.0');
-const axios = require('axios');
+import envConfiguration from "@/configurations/env.configuration-1.0.0";
+import axios from 'axios';
 
-const { api_url } = envConfiguration;
+const { backend_url } = envConfiguration;
 
 const apiClient = axios.create({
-    baseURL: api_url,
+    baseURL: backend_url,
     withCredentials: true,
     headers: {
         'Content-Type': 'application/json'
     }
 });
+
+export default apiClient;
