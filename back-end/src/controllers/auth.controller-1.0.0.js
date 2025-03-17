@@ -17,27 +17,36 @@ const userInfo = asyncHandler(async(req, res) => {
     } });
 });
 
-const login = asyncHandler(async(req, res) => {
+const login = asyncHandler(async (req, res) => {
     const { email, password } = req.body;
 
     try {
         const user = await User.login(email, password);
-        const authToken = await user.generateAuthTokenAndSaveUser();
+        if (!user) {
+            return res.status(401).json({ message: "Email ou mot de passe incorrect" });
+        }
 
+        const authToken = await user.generateAuthTokenAndSaveUser();
         cookieHelper.setJwtCookie(res, authToken, env);
 
-        res.status(200).json({ user: {
-            _id: user._id,
-            email: user.email,
-            firstName: user.firstName,
-            lastName: user.lastName,
-            nickName: user.nickName,
-            profilePic: user.profilePic,
-            profileSetup: user.profileSetup
-        } });
+        res.status(200).json({ 
+            user: {
+                _id: user._id,
+                email: user.email,
+                firstName: user.firstName,
+                lastName: user.lastName,
+                nickName: user.nickName,
+                profilePic: user.profilePic,
+                profileSetup: user.profileSetup
+            }
+        });
     } catch (error) {
-        res.status(500);
-        throw new Error(error.message);
+        if (error.message === "Login or password incorrect") {
+            return res.status(401).json({ message: "Email or password incorrect" });
+        }
+
+        console.error(error.message);
+        res.status(500).json({ message: "Internal server error" });
     }
 });
 

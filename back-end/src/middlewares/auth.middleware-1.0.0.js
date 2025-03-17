@@ -5,12 +5,13 @@ const envConfiguration = require('../configurations/env.configuration-1.0.0');
 const { jwt_key } = envConfiguration;
 
 const authMiddleware = (roles = []) => {
-    console.log("entrer middleware");
-
     return async (req, res, next) => {
         try {
-            console.log("caca");
-            const authToken = req.header('Authorization').replace('Bearer ', '');
+            if (req.cookies.jwt) {
+                authToken = req.cookies.jwt;
+            } else {
+                return res.status(401).json({ message: "Unauthorised, no token provided" });
+            }
             const decodedToken = jwt.verify(authToken, jwt_key);
 
             const user = await User.findOne({ _id: decodedToken._id });

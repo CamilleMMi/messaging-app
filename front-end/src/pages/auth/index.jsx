@@ -62,7 +62,6 @@ const Auth = () => {
     };
 
     const handleLogin = async () => {
-        console.log("test")
         if (validateLogin()) {
             const response = await apiClient.post("/auth/login", {
                 email,
@@ -71,6 +70,7 @@ const Auth = () => {
 
             if (response.status === 200) {
                 setUserInfo(response.data.user);
+                localStorage.setItem("userInfo", JSON.stringify(response.data));
                 if (response.data.user.profileSetup) {
                     toast.success("Login successful");
                     navigate("/chat");
