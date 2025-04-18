@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Socket.IO Client</title>
+    <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+</head>
+<body>
+    <h1>Connexion WebSocket</h1>
+    <button id="sendButton">Envoyer myCustomEvent</button>
+
+    <script>
+        // Connexion au serveur Socket.IO
+        const socket = io("http://localhost:3001", {
+            auth: {
+                userId: "test-user-id"
+            },
+            withCredentials: true
+        });
+
+        socket.on("connect", () => {
+            console.log("✅ Connecté au serveur :", socket.id);
+        });
+
+        socket.on("disconnect", () => {
+            console.log("❌ Déconnecté du serveur");
+        });
+
+        socket.on("connect_error", (err) => {
+            console.error("Erreur de connexion :", err.message);
+        });
+
+        // Bouton pour envoyer un événement personnalisé
+        document.getElementById("sendButton").addEventListener("click", () => {
+            socket.emit("myCustomEvent", { message: "Coucou depuis le client HTML !" });
+            console.log("📤 Événement myCustomEvent envoyé !");
+        });
+    </script>
+</body>
+</html>

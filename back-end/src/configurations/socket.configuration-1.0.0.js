@@ -24,6 +24,10 @@ const socketConfiguration = (server) => {
             console.log("User ID not provided.");
         }
 
+        socket.on("myCustomEvent", (data) => {
+            console.log(`Received custom event from ${userId}:`, data);
+        });
+        
         socket.on("disconnect", () => {
             usersSocketMap.delete(userId);
             console.log(`User ${userId} disconnected.`);
